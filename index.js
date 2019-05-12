@@ -26,6 +26,13 @@ async function main() {
 
   const videoGlob = process.env.VIDEO_GLOB;
   const videoFiles = await globby(videoGlob);
+
+  if (videoFiles.length === 0) {
+    consola.info("No video's found. Stopping.");
+    process.exit(1);
+    return;
+  }
+
   consola.info(`${videoFiles.length} video(s) found:`);
   consola.info(videoFiles);
 
