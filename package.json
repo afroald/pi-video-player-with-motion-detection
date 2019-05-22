@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "Roald Hacquebord <roald@zielma.kr>",
   "license": "MIT",
@@ -16,6 +17,7 @@
   "dependencies": {
     "consola": "^2.6.1",
     "cycled": "^1.1.0",
+    "delay": "^4.2.0",
     "dotenv": "^8.0.0",
     "globby": "^9.2.0",
     "omxplayer": "^1.0.0",

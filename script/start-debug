@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Waiting 5 seconds to make sure the system is booted"
+sleep 5
+
+echo "Starting video player"
+
+set PS=""
+setterm -cursor off
+clear
+
+sudo node index.js

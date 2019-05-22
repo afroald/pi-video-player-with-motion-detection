@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Starting video player"
+sleep 2
+
+set PS=""
+setterm -cursor off
+clear
+
+sudo npm run start > /dev/null 2>&1

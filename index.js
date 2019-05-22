@@ -5,8 +5,17 @@ const consola = require('consola');
 const globby = require('globby');
 const Cycled = require('cycled');
 const pigpio = require('pigpio');
+const delay = require('delay');
 
 const { Gpio } = pigpio;
+
+function logError(error) {
+  if (!error) {
+    return;
+  }
+
+  consola.error(error);
+}
 
 async function main() {
   consola.info('Setting up GPIO');
@@ -17,7 +26,7 @@ async function main() {
     pullUpDown: Gpio.PUD_UP,
     alert: true,
   });
-  resetButton.glitchFilter(50000);
+  resetButton.glitchFilter(100000);
 
   const motionSensor = new Gpio(24, {
     mode: Gpio.INPUT,
@@ -44,21 +53,25 @@ async function main() {
     error: consola.error,
     blank: true,
   });
+  await delay(4000);
 
   function startVideo(path) {
     consola.info(`Starting video ${path}`);
 
-    player.start(path, () => {
+    player.start(path, (error) => {
+      if (error) {
+        consola.error(error);
+        return;
+      }
+
       const motion = motionSensor.digitalRead();
 
       if (!motion) {
         consola.info('Immediately pausing video because no motion is detected');
-        player.pause();
+        player.pause(logError);
       }
     });
   }
-
-  startVideo(cycled.current());
 
   player.on('stopped', () => {
     consola.info('Video stopped, starting next video');
@@ -71,18 +84,20 @@ async function main() {
     }
 
     consola.info('Reset button pressed, starting next video');
-    player.stop();
+    player.stop(logError);
   });
 
   motionSensor.on('interrupt', (motion) => {
     if (motion) {
       consola.info('Unpausing video because motion is detected');
-      player.playPause();
+      player._dbusInvoke('org.mpris.MediaPlayer2.Player', 'Play', null, null, logError);
     } else {
       consola.info('Pausing video because no motion is detected anymore');
-      player.pause();
+      player.pause(logError);
     }
   });
+
+  startVideo(cycled.current());
 }
 
 main();
